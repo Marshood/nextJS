@@ -1,8 +1,12 @@
 const post = (props: {
-  post: { id: string; title: string; email: string }
+  post: {
+    body: string
+    id: string
+    title: string
+    email: string
+  }
 }) => {
   const { post } = props
-  console.log('po', post)
   return (
     post && (
       <>
