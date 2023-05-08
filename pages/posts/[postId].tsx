@@ -1,4 +1,6 @@
-const post = (props: {
+import { useRouter } from 'next/router'
+
+const Post = (props: {
   post: {
     body: string
     id: string
@@ -7,6 +9,10 @@ const post = (props: {
   }
 }) => {
   const { post } = props
+  const router = useRouter()
+  if (router.isFallback) {
+    return <h1> Loading...</h1>
+  }
   return (
     post && (
       <>
@@ -22,7 +28,7 @@ const post = (props: {
     )
   )
 }
-export default post
+export default Post
 
 export async function getStaticPaths() {
   const response = await fetch(`https://jsonplaceholder.typicode.com/posts`)
@@ -35,17 +41,37 @@ export async function getStaticPaths() {
     }
   })
   return {
-    paths,
-    fallback: false,
+    paths: [
+      {
+        params: { postId: '1' },
+      },
+      {
+        params: { postId: '2' },
+      },
+      {
+        params: { postId: '3' },
+      },
+    ],
+    fallback: true,
   }
+  // return {
+  //   paths,
+  //   fallback: false,
+  // }
 }
 
 export async function getStaticProps(context: { params: any }) {
   const { params } = context
+  console.log('Generating page for /posts/', params.postId)
   const response = await fetch(
     `https://jsonplaceholder.typicode.com/posts/${params.postId}`,
   )
   const data = await response?.json()
-  console.log(data)
+  if (!data.id) {
+    return {
+      notFound: true,
+    }
+  }
+  // console.log(data)
   return { props: { post: data } }
 }
