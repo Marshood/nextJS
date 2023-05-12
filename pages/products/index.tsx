@@ -32,9 +32,13 @@ const ProductsList = (props: {
 }
 
 export async function getStaticProps() {
-  const response = await fetch('http://localhost:4000/products/')
-  const data = await response?.json()
-  return { props: { products: data }, revalidate: 10 }
+  try {
+    const response = await fetch('http://localhost:4000/products/')
+    const data = await response?.json()
+    return { props: { products: data }, revalidate: 3 }
+  } catch (err) {
+    return { props: { products: [] }, revalidate: 3 }
+  }
 }
 
 export default ProductsList
